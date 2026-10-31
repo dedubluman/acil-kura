@@ -498,8 +498,15 @@ document.addEventListener("click", (e) => {
 document.addEventListener("visibilitychange", () => { if (!document.hidden) yenile().catch(() => {}); });
 
 const q = new URLSearchParams(location.search);
-const yon = new URLSearchParams(location.hash.slice(1)).get("yonetici");
+const hash = new URLSearchParams(location.hash.slice(1));
+const yon = hash.get("yonetici");
 if (q.get("oda") && yon) { LS.setOrg(q.get("oda").trim().toUpperCase(), yon); history.replaceState(null, "", `?oda=${q.get("oda")}`); }
+// Kişisel aktarım linki: başka adreste/cihazda alınmış ismi bu tarayıcıya taşır (operatör engeli durumunda).
+const aktarilan = hash.get("cihaz");
+if (q.get("oda") && /^[A-Za-z0-9-]{16,64}$/.test(aktarilan ?? "")) {
+  localStorage.setItem("acilKura.cihaz", aktarilan);
+  history.replaceState(null, "", `?oda=${q.get("oda")}`);
+}
 LS.cihaz();
 if (q.get("oda")) odayaGir(q.get("oda")); else ciz();
 })();
