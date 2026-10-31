@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/api/room", "destination": "https://acil-kura-api-2026.netlify.app/api/room" }
+  ]
+}
