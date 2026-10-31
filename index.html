@@ -502,11 +502,16 @@ const hash = new URLSearchParams(location.hash.slice(1));
 const yon = hash.get("yonetici");
 if (q.get("oda") && yon) { LS.setOrg(q.get("oda").trim().toUpperCase(), yon); history.replaceState(null, "", `?oda=${q.get("oda")}`); }
 // Kişisel aktarım linki: başka adreste/cihazda alınmış ismi bu tarayıcıya taşır (operatör engeli durumunda).
-const aktarilan = hash.get("cihaz");
-if (q.get("oda") && /^[A-Za-z0-9-]{16,64}$/.test(aktarilan ?? "")) {
+function cihazAktar(h) {
+  const aktarilan = h.get("cihaz");
+  if (!q.get("oda") || !/^[A-Za-z0-9-]{16,64}$/.test(aktarilan ?? "")) return false;
   localStorage.setItem("acilKura.cihaz", aktarilan);
   history.replaceState(null, "", `?oda=${q.get("oda")}`);
+  return true;
 }
+cihazAktar(hash);
+// Sayfa açıkken yalnız #cihaz= değişen link yeniden yükleme yapmaz: aktarıp yenile.
+addEventListener("hashchange", () => { if (cihazAktar(new URLSearchParams(location.hash.slice(1)))) location.reload(); });
 LS.cihaz();
 if (q.get("oda")) odayaGir(q.get("oda")); else ciz();
 })();
